@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from network_info import get_network_info
+
 
 class NetScopeApp(ctk.CTk):
     def __init__(self):
@@ -17,6 +19,8 @@ class NetScopeApp(ctk.CTk):
         # Configure main window layout
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
+
+        self.network_info = get_network_info()
 
         self.create_sidebar()
         self.create_dashboard()
@@ -169,14 +173,15 @@ class NetScopeApp(ctk.CTk):
         self.network_card = self.create_card(
             column=1,
             title="Network Range",
-            value="Not detected"
+            value=self.network_info["network_range"]
         )
+        
 
         self.gateway_card = self.create_card(
             column=2,
             title="Default Gateway",
-            value="Not detected"
-        )
+            value=self.network_info["gateway"]
+)
 
         self.results_frame = ctk.CTkFrame(
             self.main_frame
