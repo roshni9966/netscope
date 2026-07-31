@@ -543,6 +543,7 @@ class NetScopeApp(ctk.CTk):
             columns=(
                 "status",
                 "ip_address",
+                "mac_address",
                 "hostname",
             ),
             show="headings",
@@ -556,6 +557,10 @@ class NetScopeApp(ctk.CTk):
         table.heading(
             "ip_address",
             text="IP Address",
+        )
+        table.heading(
+           "mac_address",
+            text="MAC Address",
         )
         table.heading(
             "hostname",
@@ -572,6 +577,11 @@ class NetScopeApp(ctk.CTk):
             width=210,
             anchor="center",
         )
+        table.column(
+           "mac_address",
+           width=220,
+           anchor="center",
+        )   
         table.column(
             "hostname",
             width=400,

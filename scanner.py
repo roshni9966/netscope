@@ -1,4 +1,5 @@
 import ipaddress
+import re
 import platform
 import socket
 import subprocess
@@ -56,6 +57,60 @@ def get_hostname(ip_address):
 
     except (socket.herror, socket.gaierror, OSError):
         return "Unknown"
+def get_mac_address(ip_address):
+    """
+    Attempt to retrieve the MAC address of a device.
+
+    Linux uses the neighbour table.
+    Windows uses the ARP table.
+    """
+
+    operating_system = platform.system().lower()
+
+    try:
+        if operating_system == "linux":
+            result = subprocess.run(
+                ["ip", "neigh", "show", ip_address],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            parts = result.stdout.split()
+
+            if "lladdr" in parts:
+                mac_index = parts.index("lladdr") + 1
+                return parts[mac_index].upper()
+
+        elif operating_system == "windows":
+            result = subprocess.run(
+                ["arp", "-a", ip_address],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            mac_pattern = (
+                r"([0-9A-Fa-f]{2}[:-]){5}"
+                r"[0-9A-Fa-f]{2}"
+            )
+
+            match = re.search(
+                mac_pattern,
+                result.stdout,
+            )
+
+            if match:
+                return (
+                    match.group(0)
+                    .replace("-", ":")
+                    .upper()
+                )
+
+    except (OSError, IndexError):
+        pass
+
+    return "Not available"
 
 
 def check_device(ip_address):
@@ -67,10 +122,11 @@ def check_device(ip_address):
         return None
 
     return {
-        "status": "Online",
-        "ip_address": ip_address,
-        "hostname": get_hostname(ip_address),
-    }
+    "status": "Online",
+    "ip_address": ip_address,
+    "mac_address": get_mac_address(ip_address),
+    "hostname": get_hostname(ip_address),
+}
 
 
 def scan_network(network_range, max_workers=50):
@@ -151,6 +207,7 @@ if __name__ == "__main__":
             for device in discovered_devices:
                 print(
                     f'{device["ip_address"]:<16} '
+                    f'{device["mac_address"]:<20} '
                     f'{device["hostname"]:<30} '
                     f'{device["status"]}'
                 )
