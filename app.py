@@ -7,6 +7,7 @@ import customtkinter as ctk
 
 from network_info import get_network_info
 from scanner import scan_network
+from ui.widgets import create_card
 
 
 ctk.set_appearance_mode("dark")
@@ -198,7 +199,7 @@ class NetScopeApp(ctk.CTk):
             pady=(4, 24),
         )
 
-        _, self.devices_value_label = self.create_card(
+        _, self.devices_value_label = create_card(
             parent=self.dashboard_page,
             row=2,
             column=0,
@@ -206,7 +207,7 @@ class NetScopeApp(ctk.CTk):
             value="0",
         )
 
-        _, self.network_value_label = self.create_card(
+        _, self.network_value_label = create_card(
             parent=self.dashboard_page,
             row=2,
             column=1,
@@ -214,7 +215,7 @@ class NetScopeApp(ctk.CTk):
             value=self.network_info["network_range"],
         )
 
-        _, self.gateway_value_label = self.create_card(
+        _, self.gateway_value_label = create_card(
             parent=self.dashboard_page,
             row=2,
             column=2,
@@ -467,48 +468,8 @@ class NetScopeApp(ctk.CTk):
         )
 
     # ---------------------------------------------------------
-    # Reusable widgets
+    # Results table
     # ---------------------------------------------------------
-
-    def create_card(self, parent, row, column, title, value):
-        card = ctk.CTkFrame(
-            parent,
-            height=130,
-        )
-        card.grid(
-            row=row,
-            column=column,
-            sticky="nsew",
-            padx=7,
-        )
-        card.grid_propagate(False)
-
-        title_label = ctk.CTkLabel(
-            card,
-            text=title,
-            font=ctk.CTkFont(size=14),
-            text_color="gray",
-        )
-        title_label.pack(
-            anchor="w",
-            padx=20,
-            pady=(20, 8),
-        )
-
-        value_label = ctk.CTkLabel(
-            card,
-            text=value,
-            font=ctk.CTkFont(
-                size=22,
-                weight="bold",
-            ),
-        )
-        value_label.pack(
-            anchor="w",
-            padx=20,
-        )
-
-        return card, value_label
 
     def create_results_table(self, parent):
         style = ttk.Style()
@@ -559,7 +520,7 @@ class NetScopeApp(ctk.CTk):
             text="IP Address",
         )
         table.heading(
-           "mac_address",
+            "mac_address",
             text="MAC Address",
         )
         table.heading(
@@ -578,10 +539,10 @@ class NetScopeApp(ctk.CTk):
             anchor="center",
         )
         table.column(
-           "mac_address",
-           width=220,
-           anchor="center",
-        )   
+            "mac_address",
+            width=220,
+            anchor="center",
+        )
         table.column(
             "hostname",
             width=400,
@@ -779,9 +740,10 @@ class NetScopeApp(ctk.CTk):
                 "",
                 tk.END,
                 values=(
-                    device["status"],
-                    device["ip_address"],
-                    device["hostname"],
+                    device.get("status", "Unknown"),
+                    device.get("ip_address", "Unknown"),
+                    device.get("mac_address", "Not available"),
+                    device.get("hostname", "Unknown"),
                 ),
             )
 
