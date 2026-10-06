@@ -1,13 +1,12 @@
 import ipaddress
 import threading
 import tkinter as tk
-from tkinter import ttk
 
 import customtkinter as ctk
 
 from network_info import get_network_info
 from scanner import scan_network
-from ui.widgets import create_card
+from ui.widgets import create_card, create_results_table
 
 
 ctk.set_appearance_mode("dark")
@@ -45,11 +44,13 @@ class NetScopeApp(ctk.CTk):
             width=210,
             corner_radius=0,
         )
+
         self.sidebar.grid(
             row=0,
             column=0,
             sticky="nsew",
         )
+
         self.sidebar.grid_propagate(False)
 
         self.logo_label = ctk.CTkLabel(
@@ -60,6 +61,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         self.logo_label.pack(
             padx=20,
             pady=(35, 38),
@@ -71,6 +73,7 @@ class NetScopeApp(ctk.CTk):
             height=42,
             command=self.show_dashboard,
         )
+
         self.dashboard_button.pack(
             padx=20,
             pady=8,
@@ -83,6 +86,7 @@ class NetScopeApp(ctk.CTk):
             height=42,
             command=self.show_scan_page,
         )
+
         self.network_scan_button.pack(
             padx=20,
             pady=8,
@@ -97,6 +101,7 @@ class NetScopeApp(ctk.CTk):
             border_width=1,
             state="disabled",
         )
+
         self.port_scanner_button.pack(
             padx=20,
             pady=8,
@@ -111,6 +116,7 @@ class NetScopeApp(ctk.CTk):
             border_width=1,
             state="disabled",
         )
+
         self.about_button.pack(
             padx=20,
             pady=8,
@@ -122,6 +128,7 @@ class NetScopeApp(ctk.CTk):
             text="Version 1.0",
             text_color="gray",
         )
+
         self.version_label.pack(
             side="bottom",
             pady=20,
@@ -137,14 +144,22 @@ class NetScopeApp(ctk.CTk):
             fg_color="transparent",
             corner_radius=0,
         )
+
         self.page_container.grid(
             row=0,
             column=1,
             sticky="nsew",
         )
 
-        self.page_container.grid_columnconfigure(0, weight=1)
-        self.page_container.grid_rowconfigure(0, weight=1)
+        self.page_container.grid_columnconfigure(
+            0,
+            weight=1,
+        )
+
+        self.page_container.grid_rowconfigure(
+            0,
+            weight=1,
+        )
 
     # ---------------------------------------------------------
     # Dashboard page
@@ -156,6 +171,7 @@ class NetScopeApp(ctk.CTk):
             fg_color="transparent",
             corner_radius=0,
         )
+
         self.dashboard_page.grid(
             row=0,
             column=0,
@@ -168,7 +184,11 @@ class NetScopeApp(ctk.CTk):
             (0, 1, 2),
             weight=1,
         )
-        self.dashboard_page.grid_rowconfigure(4, weight=1)
+
+        self.dashboard_page.grid_rowconfigure(
+            4,
+            weight=1,
+        )
 
         heading = ctk.CTkLabel(
             self.dashboard_page,
@@ -178,6 +198,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         heading.grid(
             row=0,
             column=0,
@@ -191,6 +212,7 @@ class NetScopeApp(ctk.CTk):
             font=ctk.CTkFont(size=15),
             text_color="gray",
         )
+
         subtitle.grid(
             row=1,
             column=0,
@@ -226,6 +248,7 @@ class NetScopeApp(ctk.CTk):
         self.dashboard_results_frame = ctk.CTkFrame(
             self.dashboard_page,
         )
+
         self.dashboard_results_frame.grid(
             row=4,
             column=0,
@@ -238,6 +261,7 @@ class NetScopeApp(ctk.CTk):
             0,
             weight=1,
         )
+
         self.dashboard_results_frame.grid_rowconfigure(
             1,
             weight=1,
@@ -251,6 +275,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         results_heading.grid(
             row=0,
             column=0,
@@ -268,15 +293,17 @@ class NetScopeApp(ctk.CTk):
             font=ctk.CTkFont(size=15),
             text_color="gray",
         )
+
         self.dashboard_empty_message.grid(
             row=1,
             column=0,
             pady=90,
         )
 
-        self.dashboard_table = self.create_results_table(
+        self.dashboard_table = create_results_table(
             self.dashboard_results_frame
         )
+
         self.dashboard_table.grid(
             row=1,
             column=0,
@@ -284,6 +311,7 @@ class NetScopeApp(ctk.CTk):
             padx=20,
             pady=(5, 20),
         )
+
         self.dashboard_table.grid_remove()
 
     # ---------------------------------------------------------
@@ -296,6 +324,7 @@ class NetScopeApp(ctk.CTk):
             fg_color="transparent",
             corner_radius=0,
         )
+
         self.scan_page.grid(
             row=0,
             column=0,
@@ -304,8 +333,15 @@ class NetScopeApp(ctk.CTk):
             pady=25,
         )
 
-        self.scan_page.grid_columnconfigure(0, weight=1)
-        self.scan_page.grid_rowconfigure(4, weight=1)
+        self.scan_page.grid_columnconfigure(
+            0,
+            weight=1,
+        )
+
+        self.scan_page.grid_rowconfigure(
+            4,
+            weight=1,
+        )
 
         heading = ctk.CTkLabel(
             self.scan_page,
@@ -315,6 +351,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         heading.grid(
             row=0,
             column=0,
@@ -330,6 +367,7 @@ class NetScopeApp(ctk.CTk):
             font=ctk.CTkFont(size=15),
             text_color="gray",
         )
+
         subtitle.grid(
             row=1,
             column=0,
@@ -340,12 +378,17 @@ class NetScopeApp(ctk.CTk):
         controls_frame = ctk.CTkFrame(
             self.scan_page,
         )
+
         controls_frame.grid(
             row=2,
             column=0,
             sticky="ew",
         )
-        controls_frame.grid_columnconfigure(0, weight=1)
+
+        controls_frame.grid_columnconfigure(
+            0,
+            weight=1,
+        )
 
         range_label = ctk.CTkLabel(
             controls_frame,
@@ -355,6 +398,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         range_label.grid(
             row=0,
             column=0,
@@ -368,6 +412,7 @@ class NetScopeApp(ctk.CTk):
             height=42,
             placeholder_text="Example: 192.168.1.0/24",
         )
+
         self.network_range_entry.grid(
             row=1,
             column=0,
@@ -388,6 +433,7 @@ class NetScopeApp(ctk.CTk):
             height=42,
             command=self.start_network_scan,
         )
+
         self.start_scan_button.grid(
             row=1,
             column=1,
@@ -399,19 +445,25 @@ class NetScopeApp(ctk.CTk):
             self.scan_page,
             fg_color="transparent",
         )
+
         status_frame.grid(
             row=3,
             column=0,
             sticky="ew",
             pady=(14, 8),
         )
-        status_frame.grid_columnconfigure(0, weight=1)
+
+        status_frame.grid_columnconfigure(
+            0,
+            weight=1,
+        )
 
         self.scan_status_label = ctk.CTkLabel(
             status_frame,
             text="Ready to scan",
             text_color="gray",
         )
+
         self.scan_status_label.grid(
             row=0,
             column=0,
@@ -423,24 +475,35 @@ class NetScopeApp(ctk.CTk):
             width=200,
             mode="indeterminate",
         )
+
         self.scan_progress.grid(
             row=0,
             column=1,
             sticky="e",
         )
+
         self.scan_progress.stop()
         self.scan_progress.grid_remove()
 
         results_frame = ctk.CTkFrame(
             self.scan_page,
         )
+
         results_frame.grid(
             row=4,
             column=0,
             sticky="nsew",
         )
-        results_frame.grid_columnconfigure(0, weight=1)
-        results_frame.grid_rowconfigure(1, weight=1)
+
+        results_frame.grid_columnconfigure(
+            0,
+            weight=1,
+        )
+
+        results_frame.grid_rowconfigure(
+            1,
+            weight=1,
+        )
 
         results_title = ctk.CTkLabel(
             results_frame,
@@ -450,6 +513,7 @@ class NetScopeApp(ctk.CTk):
                 weight="bold",
             ),
         )
+
         results_title.grid(
             row=0,
             column=0,
@@ -458,7 +522,10 @@ class NetScopeApp(ctk.CTk):
             pady=(18, 10),
         )
 
-        self.scan_table = self.create_results_table(results_frame)
+        self.scan_table = create_results_table(
+            results_frame
+        )
+
         self.scan_table.grid(
             row=1,
             column=0,
@@ -466,90 +533,6 @@ class NetScopeApp(ctk.CTk):
             padx=20,
             pady=(5, 20),
         )
-
-    # ---------------------------------------------------------
-    # Results table
-    # ---------------------------------------------------------
-
-    def create_results_table(self, parent):
-        style = ttk.Style()
-
-        style.theme_use("clam")
-
-        style.configure(
-            "NetScope.Treeview",
-            background="#2b2b2b",
-            foreground="#f2f2f2",
-            fieldbackground="#2b2b2b",
-            rowheight=36,
-            borderwidth=0,
-            font=("Arial", 11),
-        )
-
-        style.configure(
-            "NetScope.Treeview.Heading",
-            background="#1f6aa5",
-            foreground="white",
-            relief="flat",
-            font=("Arial", 11, "bold"),
-        )
-
-        style.map(
-            "NetScope.Treeview",
-            background=[("selected", "#1f6aa5")],
-        )
-
-        table = ttk.Treeview(
-            parent,
-            columns=(
-                "status",
-                "ip_address",
-                "mac_address",
-                "hostname",
-            ),
-            show="headings",
-            style="NetScope.Treeview",
-        )
-
-        table.heading(
-            "status",
-            text="Status",
-        )
-        table.heading(
-            "ip_address",
-            text="IP Address",
-        )
-        table.heading(
-            "mac_address",
-            text="MAC Address",
-        )
-        table.heading(
-            "hostname",
-            text="Hostname",
-        )
-
-        table.column(
-            "status",
-            width=120,
-            anchor="center",
-        )
-        table.column(
-            "ip_address",
-            width=210,
-            anchor="center",
-        )
-        table.column(
-            "mac_address",
-            width=220,
-            anchor="center",
-        )
-        table.column(
-            "hostname",
-            width=400,
-            anchor="w",
-        )
-
-        return table
 
     # ---------------------------------------------------------
     # Page navigation
@@ -563,6 +546,7 @@ class NetScopeApp(ctk.CTk):
             fg_color="#1f6aa5",
             border_width=0,
         )
+
         self.network_scan_button.configure(
             fg_color="transparent",
             border_width=1,
@@ -576,13 +560,14 @@ class NetScopeApp(ctk.CTk):
             fg_color="#1f6aa5",
             border_width=0,
         )
+
         self.dashboard_button.configure(
             fg_color="transparent",
             border_width=1,
         )
 
     # ---------------------------------------------------------
-    # Scanning
+    # Network scanning
     # ---------------------------------------------------------
 
     def validate_network_range(self, network_range):
@@ -593,25 +578,36 @@ class NetScopeApp(ctk.CTk):
             )
 
         except ValueError:
-            return None, "Please enter a valid network range."
+            return (
+                None,
+                "Please enter a valid network range.",
+            )
 
         if network.version != 4:
-            return None, "Only IPv4 networks are currently supported."
+            return (
+                None,
+                "Only IPv4 networks are currently supported.",
+            )
 
         if not network.is_private:
-            return None, "Please use a private local network range."
+            return (
+                None,
+                "Please use a private local network range.",
+            )
 
         if network.num_addresses > 256:
             return (
                 None,
-                "For safety, NetScope currently scans a maximum "
-                "of 256 addresses.",
+                "For safety, NetScope currently scans "
+                "a maximum of 256 addresses.",
             )
 
         return network, None
 
     def start_network_scan(self):
-        network_range = self.network_range_entry.get().strip()
+        network_range = (
+            self.network_range_entry.get().strip()
+        )
 
         _, error_message = self.validate_network_range(
             network_range
@@ -630,7 +626,10 @@ class NetScopeApp(ctk.CTk):
             state="disabled",
             text="Scanning...",
         )
-        self.network_range_entry.configure(state="disabled")
+
+        self.network_range_entry.configure(
+            state="disabled"
+        )
 
         self.scan_status_label.configure(
             text=f"Scanning {network_range}...",
@@ -645,6 +644,7 @@ class NetScopeApp(ctk.CTk):
             args=(network_range,),
             daemon=True,
         )
+
         scan_thread.start()
 
     def run_network_scan(self, network_range):
@@ -662,10 +662,16 @@ class NetScopeApp(ctk.CTk):
         except Exception as error:
             self.after(
                 0,
-                lambda: self.handle_scan_error(str(error)),
+                lambda: self.handle_scan_error(
+                    str(error)
+                ),
             )
 
-    def finish_network_scan(self, devices, network_range):
+    def finish_network_scan(
+        self,
+        devices,
+        network_range,
+    ):
         self.discovered_devices = devices
 
         self.scan_progress.stop()
@@ -675,11 +681,15 @@ class NetScopeApp(ctk.CTk):
             state="normal",
             text="Start Scan",
         )
-        self.network_range_entry.configure(state="normal")
+
+        self.network_range_entry.configure(
+            state="normal"
+        )
 
         self.devices_value_label.configure(
             text=str(len(devices))
         )
+
         self.network_value_label.configure(
             text=network_range
         )
@@ -688,6 +698,7 @@ class NetScopeApp(ctk.CTk):
             self.scan_table,
             devices,
         )
+
         self.populate_table(
             self.dashboard_table,
             devices,
@@ -707,14 +718,22 @@ class NetScopeApp(ctk.CTk):
 
         else:
             self.scan_status_label.configure(
-                text="Scan complete — no online devices were found.",
+                text=(
+                    "Scan complete — no online "
+                    "devices were found."
+                ),
                 text_color="gray",
             )
 
             self.dashboard_table.grid_remove()
+
             self.dashboard_empty_message.configure(
-                text="The latest scan found no online devices."
+                text=(
+                    "The latest scan found "
+                    "no online devices."
+                )
             )
+
             self.dashboard_empty_message.grid()
 
     def handle_scan_error(self, error_message):
@@ -725,12 +744,19 @@ class NetScopeApp(ctk.CTk):
             state="normal",
             text="Start Scan",
         )
-        self.network_range_entry.configure(state="normal")
+
+        self.network_range_entry.configure(
+            state="normal"
+        )
 
         self.scan_status_label.configure(
             text=f"Scan failed: {error_message}",
             text_color="#ff6b6b",
         )
+
+    # ---------------------------------------------------------
+    # Table data
+    # ---------------------------------------------------------
 
     def populate_table(self, table, devices):
         self.clear_table(table)
@@ -740,10 +766,22 @@ class NetScopeApp(ctk.CTk):
                 "",
                 tk.END,
                 values=(
-                    device.get("status", "Unknown"),
-                    device.get("ip_address", "Unknown"),
-                    device.get("mac_address", "Not available"),
-                    device.get("hostname", "Unknown"),
+                    device.get(
+                        "status",
+                        "Unknown",
+                    ),
+                    device.get(
+                        "ip_address",
+                        "Unknown",
+                    ),
+                    device.get(
+                        "mac_address",
+                        "Not available",
+                    ),
+                    device.get(
+                        "hostname",
+                        "Unknown",
+                    ),
                 ),
             )
 
