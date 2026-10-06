@@ -6,6 +6,7 @@ import customtkinter as ctk
 
 from network_info import get_network_info
 from scanner import scan_network
+from ui.sidebar import create_sidebar
 from ui.widgets import create_card, create_results_table
 
 
@@ -27,7 +28,7 @@ class NetScopeApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.create_sidebar()
+        self.setup_sidebar()
         self.create_page_container()
         self.create_dashboard_page()
         self.create_scan_page()
@@ -38,101 +39,26 @@ class NetScopeApp(ctk.CTk):
     # Sidebar
     # ---------------------------------------------------------
 
-    def create_sidebar(self):
-        self.sidebar = ctk.CTkFrame(
-            self,
-            width=210,
-            corner_radius=0,
+    def setup_sidebar(self):
+        sidebar_widgets = create_sidebar(
+            parent=self,
+            dashboard_command=self.show_dashboard,
+            network_scan_command=self.show_scan_page,
         )
 
-        self.sidebar.grid(
-            row=0,
-            column=0,
-            sticky="nsew",
-        )
-
-        self.sidebar.grid_propagate(False)
-
-        self.logo_label = ctk.CTkLabel(
-            self.sidebar,
-            text="NetScope",
-            font=ctk.CTkFont(
-                size=27,
-                weight="bold",
-            ),
-        )
-
-        self.logo_label.pack(
-            padx=20,
-            pady=(35, 38),
-        )
-
-        self.dashboard_button = ctk.CTkButton(
-            self.sidebar,
-            text="Dashboard",
-            height=42,
-            command=self.show_dashboard,
-        )
-
-        self.dashboard_button.pack(
-            padx=20,
-            pady=8,
-            fill="x",
-        )
-
-        self.network_scan_button = ctk.CTkButton(
-            self.sidebar,
-            text="Network Scan",
-            height=42,
-            command=self.show_scan_page,
-        )
-
-        self.network_scan_button.pack(
-            padx=20,
-            pady=8,
-            fill="x",
-        )
-
-        self.port_scanner_button = ctk.CTkButton(
-            self.sidebar,
-            text="Port Scanner",
-            height=42,
-            fg_color="transparent",
-            border_width=1,
-            state="disabled",
-        )
-
-        self.port_scanner_button.pack(
-            padx=20,
-            pady=8,
-            fill="x",
-        )
-
-        self.about_button = ctk.CTkButton(
-            self.sidebar,
-            text="About",
-            height=42,
-            fg_color="transparent",
-            border_width=1,
-            state="disabled",
-        )
-
-        self.about_button.pack(
-            padx=20,
-            pady=8,
-            fill="x",
-        )
-
-        self.version_label = ctk.CTkLabel(
-            self.sidebar,
-            text="Version 1.0",
-            text_color="gray",
-        )
-
-        self.version_label.pack(
-            side="bottom",
-            pady=20,
-        )
+        self.sidebar = sidebar_widgets["frame"]
+        self.dashboard_button = sidebar_widgets[
+            "dashboard_button"
+        ]
+        self.network_scan_button = sidebar_widgets[
+            "network_scan_button"
+        ]
+        self.port_scanner_button = sidebar_widgets[
+            "port_scanner_button"
+        ]
+        self.about_button = sidebar_widgets[
+            "about_button"
+        ]
 
     # ---------------------------------------------------------
     # Main page container
