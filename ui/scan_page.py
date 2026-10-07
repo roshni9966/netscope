@@ -234,6 +234,31 @@ def create_scan_page(
         pady=(18, 10),
     )
 
+    # ---------------------------------------------------------
+    # Search
+    # ---------------------------------------------------------
+
+    search_entry = ctk.CTkEntry(
+        results_frame,
+        width=300,
+        height=38,
+        placeholder_text=(
+            "Search by IP, MAC address, or hostname"
+        ),
+    )
+
+    search_entry.grid(
+        row=0,
+        column=0,
+        sticky="e",
+        padx=20,
+        pady=(18, 10),
+    )
+
+    # ---------------------------------------------------------
+    # Device results table
+    # ---------------------------------------------------------
+
     scan_table = create_results_table(
         results_frame
     )
@@ -256,5 +281,6 @@ def create_scan_page(
         "start_scan_button": start_scan_button,
         "status_label": scan_status_label,
         "progress": scan_progress,
+        "search_entry": search_entry,
         "table": scan_table,
     }

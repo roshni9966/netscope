@@ -10,6 +10,7 @@ from ui.dashboard import create_dashboard_page
 from ui.scan_page import create_scan_page
 from ui.sidebar import create_sidebar
 
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -32,6 +33,7 @@ class NetScopeApp(ctk.CTk):
         self.create_page_container()
         self.setup_dashboard()
         self.setup_scan_page()
+
         self.show_dashboard()
 
     # ---------------------------------------------------------
@@ -125,32 +127,40 @@ class NetScopeApp(ctk.CTk):
     # ---------------------------------------------------------
 
     def setup_scan_page(self):
-            scan_widgets = create_scan_page(
-                parent=self.page_container,
-                network_info=self.network_info,
-                start_scan_command=self.start_network_scan,
-            )
+        scan_widgets = create_scan_page(
+            parent=self.page_container,
+            network_info=self.network_info,
+            start_scan_command=self.start_network_scan,
+        )
 
-            self.scan_page = scan_widgets["page"]
+        self.scan_page = scan_widgets["page"]
 
-            self.network_range_entry = scan_widgets[
-                "network_range_entry"
-            ]
+        self.network_range_entry = scan_widgets[
+            "network_range_entry"
+        ]
 
-            self.start_scan_button = scan_widgets[
-                "start_scan_button"
-            ]
+        self.start_scan_button = scan_widgets[
+            "start_scan_button"
+        ]
 
-            self.scan_status_label = scan_widgets[
-                "status_label"
-            ]
+        self.scan_status_label = scan_widgets[
+            "status_label"
+        ]
 
-            self.scan_progress = scan_widgets[
-                "progress"
-            ]
+        self.scan_progress = scan_widgets[
+            "progress"
+        ]
 
-            self.scan_table = scan_widgets["table"]
-                
+        self.search_entry = scan_widgets[
+            "search_entry"
+        ]
+
+        self.scan_table = scan_widgets["table"]
+
+        self.search_entry.bind(
+            "<KeyRelease>",
+            self.filter_devices,
+        )
 
     # ---------------------------------------------------------
     # Page navigation
@@ -312,10 +322,8 @@ class NetScopeApp(ctk.CTk):
             text=network_range
         )
 
-        self.populate_table(
-            self.scan_table,
-            devices,
-        )
+        # Apply the current search filter after every scan.
+        self.filter_devices()
 
         self.populate_table(
             self.dashboard_table,
@@ -370,6 +378,46 @@ class NetScopeApp(ctk.CTk):
         self.scan_status_label.configure(
             text=f"Scan failed: {error_message}",
             text_color="#ff6b6b",
+        )
+
+    # ---------------------------------------------------------
+    # Device filtering
+    # ---------------------------------------------------------
+
+    def filter_devices(self, event=None):
+        search_text = (
+            self.search_entry.get().strip().lower()
+        )
+
+        if not search_text:
+            filtered_devices = self.discovered_devices
+
+        else:
+            filtered_devices = []
+
+            for device in self.discovered_devices:
+                ip_address = str(
+                    device.get("ip_address", "")
+                ).lower()
+
+                mac_address = str(
+                    device.get("mac_address", "")
+                ).lower()
+
+                hostname = str(
+                    device.get("hostname", "")
+                ).lower()
+
+                if (
+                    search_text in ip_address
+                    or search_text in mac_address
+                    or search_text in hostname
+                ):
+                    filtered_devices.append(device)
+
+        self.populate_table(
+            self.scan_table,
+            filtered_devices,
         )
 
     # ---------------------------------------------------------
