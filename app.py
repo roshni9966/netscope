@@ -6,8 +6,9 @@ import customtkinter as ctk
 
 from network_info import get_network_info
 from scanner import scan_network
+from ui.dashboard import create_dashboard_page
 from ui.sidebar import create_sidebar
-from ui.widgets import create_card, create_results_table
+from ui.widgets import create_results_table
 
 
 ctk.set_appearance_mode("dark")
@@ -30,7 +31,7 @@ class NetScopeApp(ctk.CTk):
 
         self.setup_sidebar()
         self.create_page_container()
-        self.create_dashboard_page()
+        self.setup_dashboard()
         self.create_scan_page()
 
         self.show_dashboard()
@@ -47,15 +48,19 @@ class NetScopeApp(ctk.CTk):
         )
 
         self.sidebar = sidebar_widgets["frame"]
+
         self.dashboard_button = sidebar_widgets[
             "dashboard_button"
         ]
+
         self.network_scan_button = sidebar_widgets[
             "network_scan_button"
         ]
+
         self.port_scanner_button = sidebar_widgets[
             "port_scanner_button"
         ]
+
         self.about_button = sidebar_widgets[
             "about_button"
         ]
@@ -88,157 +93,34 @@ class NetScopeApp(ctk.CTk):
         )
 
     # ---------------------------------------------------------
-    # Dashboard page
+    # Dashboard
     # ---------------------------------------------------------
 
-    def create_dashboard_page(self):
-        self.dashboard_page = ctk.CTkFrame(
-            self.page_container,
-            fg_color="transparent",
-            corner_radius=0,
+    def setup_dashboard(self):
+        dashboard_widgets = create_dashboard_page(
+            parent=self.page_container,
+            network_info=self.network_info,
         )
 
-        self.dashboard_page.grid(
-            row=0,
-            column=0,
-            sticky="nsew",
-            padx=28,
-            pady=25,
-        )
+        self.dashboard_page = dashboard_widgets["page"]
 
-        self.dashboard_page.grid_columnconfigure(
-            (0, 1, 2),
-            weight=1,
-        )
+        self.devices_value_label = dashboard_widgets[
+            "devices_value_label"
+        ]
 
-        self.dashboard_page.grid_rowconfigure(
-            4,
-            weight=1,
-        )
+        self.network_value_label = dashboard_widgets[
+            "network_value_label"
+        ]
 
-        heading = ctk.CTkLabel(
-            self.dashboard_page,
-            text="Network Dashboard",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold",
-            ),
-        )
+        self.gateway_value_label = dashboard_widgets[
+            "gateway_value_label"
+        ]
 
-        heading.grid(
-            row=0,
-            column=0,
-            columnspan=3,
-            sticky="w",
-        )
+        self.dashboard_empty_message = dashboard_widgets[
+            "empty_message"
+        ]
 
-        subtitle = ctk.CTkLabel(
-            self.dashboard_page,
-            text="Monitor and explore devices on your local network.",
-            font=ctk.CTkFont(size=15),
-            text_color="gray",
-        )
-
-        subtitle.grid(
-            row=1,
-            column=0,
-            columnspan=3,
-            sticky="w",
-            pady=(4, 24),
-        )
-
-        _, self.devices_value_label = create_card(
-            parent=self.dashboard_page,
-            row=2,
-            column=0,
-            title="Online Devices",
-            value="0",
-        )
-
-        _, self.network_value_label = create_card(
-            parent=self.dashboard_page,
-            row=2,
-            column=1,
-            title="Network Range",
-            value=self.network_info["network_range"],
-        )
-
-        _, self.gateway_value_label = create_card(
-            parent=self.dashboard_page,
-            row=2,
-            column=2,
-            title="Default Gateway",
-            value=self.network_info["gateway"],
-        )
-
-        self.dashboard_results_frame = ctk.CTkFrame(
-            self.dashboard_page,
-        )
-
-        self.dashboard_results_frame.grid(
-            row=4,
-            column=0,
-            columnspan=3,
-            sticky="nsew",
-            pady=(24, 0),
-        )
-
-        self.dashboard_results_frame.grid_columnconfigure(
-            0,
-            weight=1,
-        )
-
-        self.dashboard_results_frame.grid_rowconfigure(
-            1,
-            weight=1,
-        )
-
-        results_heading = ctk.CTkLabel(
-            self.dashboard_results_frame,
-            text="Recent Scan Results",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold",
-            ),
-        )
-
-        results_heading.grid(
-            row=0,
-            column=0,
-            sticky="w",
-            padx=20,
-            pady=(18, 10),
-        )
-
-        self.dashboard_empty_message = ctk.CTkLabel(
-            self.dashboard_results_frame,
-            text=(
-                "No scan results yet.\n"
-                "Open Network Scan to discover devices."
-            ),
-            font=ctk.CTkFont(size=15),
-            text_color="gray",
-        )
-
-        self.dashboard_empty_message.grid(
-            row=1,
-            column=0,
-            pady=90,
-        )
-
-        self.dashboard_table = create_results_table(
-            self.dashboard_results_frame
-        )
-
-        self.dashboard_table.grid(
-            row=1,
-            column=0,
-            sticky="nsew",
-            padx=20,
-            pady=(5, 20),
-        )
-
-        self.dashboard_table.grid_remove()
+        self.dashboard_table = dashboard_widgets["table"]
 
     # ---------------------------------------------------------
     # Network Scan page
