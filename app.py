@@ -7,9 +7,8 @@ import customtkinter as ctk
 from network_info import get_network_info
 from scanner import scan_network
 from ui.dashboard import create_dashboard_page
+from ui.scan_page import create_scan_page
 from ui.sidebar import create_sidebar
-from ui.widgets import create_results_table
-
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -32,8 +31,7 @@ class NetScopeApp(ctk.CTk):
         self.setup_sidebar()
         self.create_page_container()
         self.setup_dashboard()
-        self.create_scan_page()
-
+        self.setup_scan_page()
         self.show_dashboard()
 
     # ---------------------------------------------------------
@@ -126,221 +124,33 @@ class NetScopeApp(ctk.CTk):
     # Network Scan page
     # ---------------------------------------------------------
 
-    def create_scan_page(self):
-        self.scan_page = ctk.CTkFrame(
-            self.page_container,
-            fg_color="transparent",
-            corner_radius=0,
-        )
+    def setup_scan_page(self):
+            scan_widgets = create_scan_page(
+                parent=self.page_container,
+                network_info=self.network_info,
+                start_scan_command=self.start_network_scan,
+            )
 
-        self.scan_page.grid(
-            row=0,
-            column=0,
-            sticky="nsew",
-            padx=28,
-            pady=25,
-        )
+            self.scan_page = scan_widgets["page"]
 
-        self.scan_page.grid_columnconfigure(
-            0,
-            weight=1,
-        )
+            self.network_range_entry = scan_widgets[
+                "network_range_entry"
+            ]
 
-        self.scan_page.grid_rowconfigure(
-            4,
-            weight=1,
-        )
+            self.start_scan_button = scan_widgets[
+                "start_scan_button"
+            ]
 
-        heading = ctk.CTkLabel(
-            self.scan_page,
-            text="Network Scanner",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold",
-            ),
-        )
+            self.scan_status_label = scan_widgets[
+                "status_label"
+            ]
 
-        heading.grid(
-            row=0,
-            column=0,
-            sticky="w",
-        )
+            self.scan_progress = scan_widgets[
+                "progress"
+            ]
 
-        subtitle = ctk.CTkLabel(
-            self.scan_page,
-            text=(
-                "Discover active devices on a local network "
-                "you own or have permission to inspect."
-            ),
-            font=ctk.CTkFont(size=15),
-            text_color="gray",
-        )
-
-        subtitle.grid(
-            row=1,
-            column=0,
-            sticky="w",
-            pady=(4, 22),
-        )
-
-        controls_frame = ctk.CTkFrame(
-            self.scan_page,
-        )
-
-        controls_frame.grid(
-            row=2,
-            column=0,
-            sticky="ew",
-        )
-
-        controls_frame.grid_columnconfigure(
-            0,
-            weight=1,
-        )
-
-        range_label = ctk.CTkLabel(
-            controls_frame,
-            text="Network range",
-            font=ctk.CTkFont(
-                size=14,
-                weight="bold",
-            ),
-        )
-
-        range_label.grid(
-            row=0,
-            column=0,
-            sticky="w",
-            padx=20,
-            pady=(16, 5),
-        )
-
-        self.network_range_entry = ctk.CTkEntry(
-            controls_frame,
-            height=42,
-            placeholder_text="Example: 192.168.1.0/24",
-        )
-
-        self.network_range_entry.grid(
-            row=1,
-            column=0,
-            sticky="ew",
-            padx=(20, 10),
-            pady=(0, 18),
-        )
-
-        self.network_range_entry.insert(
-            0,
-            self.network_info["network_range"],
-        )
-
-        self.start_scan_button = ctk.CTkButton(
-            controls_frame,
-            text="Start Scan",
-            width=140,
-            height=42,
-            command=self.start_network_scan,
-        )
-
-        self.start_scan_button.grid(
-            row=1,
-            column=1,
-            padx=(0, 20),
-            pady=(0, 18),
-        )
-
-        status_frame = ctk.CTkFrame(
-            self.scan_page,
-            fg_color="transparent",
-        )
-
-        status_frame.grid(
-            row=3,
-            column=0,
-            sticky="ew",
-            pady=(14, 8),
-        )
-
-        status_frame.grid_columnconfigure(
-            0,
-            weight=1,
-        )
-
-        self.scan_status_label = ctk.CTkLabel(
-            status_frame,
-            text="Ready to scan",
-            text_color="gray",
-        )
-
-        self.scan_status_label.grid(
-            row=0,
-            column=0,
-            sticky="w",
-        )
-
-        self.scan_progress = ctk.CTkProgressBar(
-            status_frame,
-            width=200,
-            mode="indeterminate",
-        )
-
-        self.scan_progress.grid(
-            row=0,
-            column=1,
-            sticky="e",
-        )
-
-        self.scan_progress.stop()
-        self.scan_progress.grid_remove()
-
-        results_frame = ctk.CTkFrame(
-            self.scan_page,
-        )
-
-        results_frame.grid(
-            row=4,
-            column=0,
-            sticky="nsew",
-        )
-
-        results_frame.grid_columnconfigure(
-            0,
-            weight=1,
-        )
-
-        results_frame.grid_rowconfigure(
-            1,
-            weight=1,
-        )
-
-        results_title = ctk.CTkLabel(
-            results_frame,
-            text="Discovered Devices",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold",
-            ),
-        )
-
-        results_title.grid(
-            row=0,
-            column=0,
-            sticky="w",
-            padx=20,
-            pady=(18, 10),
-        )
-
-        self.scan_table = create_results_table(
-            results_frame
-        )
-
-        self.scan_table.grid(
-            row=1,
-            column=0,
-            sticky="nsew",
-            padx=20,
-            pady=(5, 20),
-        )
+            self.scan_table = scan_widgets["table"]
+                
 
     # ---------------------------------------------------------
     # Page navigation
